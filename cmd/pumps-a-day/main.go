@@ -1,6 +1,7 @@
 package main
 
 import (
+    "os"
 	"log"
 	"net/http"
 	"strconv"
@@ -8,6 +9,16 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/yonikosiner/track-pumps-a-day/pkg/pumps"
 )
+
+// Get the Port from the environment so we can run on Heroku
+func GetPort() string {
+    var port = os.Getenv("PORT")
+    // Set a default port if there is nothing in the environment
+    if port == "" {
+        port = "8080"
+    }
+    return ":" + port
+}
 
 var p pumps.Pumps
 
@@ -69,5 +80,5 @@ func main() {
     router.HandleFunc("/", getPumps).Methods("GET")
     router.HandleFunc("/clear", clearPumps).Methods("PUT")
     router.HandleFunc("/update/{new-count}", updatePumpCount).Methods("POST")
-    log.Fatal(http.ListenAndServe(":8080", router))
+    log.Fatal(http.ListenAndServe(GetPort(), router))
 }
